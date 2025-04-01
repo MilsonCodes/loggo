@@ -110,11 +110,11 @@ func (l *Logger) log(level Level, msg string, args ...any) {
 	timestamp := time.Now().Format(l.timeFormat)
 	message := fmt.Sprintf(msg, args...)
 
-	fmt.Fprintf(l.output, "[%s] %s%s%s: %s\n",
-		timestamp,
+	fmt.Fprintf(l.output, "[%s%s%s] %s: %s\n",
 		levelColor,
 		levelStr,
 		colorReset,
+		timestamp,
 		message,
 	)
 
