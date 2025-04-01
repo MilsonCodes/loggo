@@ -2,6 +2,8 @@
 
 A simple and efficient logging library for Go applications.
 
+![Loggo](https://github.com/user-attachments/assets/7e372f4d-2692-4315-8fa1-b7aed4ca9fea)
+
 ## Features
 
 - Simple and intuitive API
