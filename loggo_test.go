@@ -157,3 +157,13 @@ func TestCritical(t *testing.T) {
 		logger.Critical("critical message")
 	}
 }
+
+func TestPanic(t *testing.T) {
+	// Skip in normal test run as it would panic
+	if os.Getenv("TEST_PANIC") == "1" {
+		var buf bytes.Buffer
+		logger := New()
+		logger.SetOutput(&buf)
+		logger.Panic("panic message")
+	}
+}
