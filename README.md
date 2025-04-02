@@ -125,13 +125,6 @@ hook := func(level loggo.Level, msg string) error {
 logger.AddHook(hook, 0) // Priority 0 (highest)
 ```
 
-### Chained API (Performance Critical)
-
-```go
-logger := loggo.New()
-logger.Info().Msgf("Processing request %d", 123)
-```
-
 ## Log Levels
 
 - `DEBUG`: Detailed information for debugging
