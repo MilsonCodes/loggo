@@ -2,6 +2,7 @@ package loggo
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"strings"
 	"testing"
@@ -89,23 +90,72 @@ func TestTimeFormat(t *testing.T) {
 }
 
 func TestHook(t *testing.T) {
-	var buf bytes.Buffer
 	logger := New()
-	logger.SetOutput(&buf)
+	defer logger.Close() // Ensure logger is closed after test
 
-	// Create a hook that returns an error
-	hookCalled := false
+	hookCalled := make(chan bool, 1) // Buffered channel to prevent blocking
 	hook := func(level Level, msg string) error {
-		hookCalled = true
+		select {
+		case hookCalled <- true:
+			// Successfully sent signal
+		default:
+			// Channel is full, don't block
+		}
 		return nil
 	}
 
-	logger.AddHook(hook)
-	logger.Info("test message")
-
-	if !hookCalled {
-		t.Error("Hook should have been called")
+	err := logger.AddHook(hook, 0)
+	if err != nil {
+		t.Fatalf("Failed to add hook: %v", err)
 	}
+
+	logger.Info("Test message")
+
+	// Wait for hook with timeout
+	select {
+	case <-hookCalled:
+		// Hook was called successfully
+	case <-time.After(2 * time.Second):
+		t.Fatal("Hook was not called within timeout")
+	}
+}
+
+func TestHookError(t *testing.T) {
+	logger := New()
+	defer logger.Close() // Ensure logger is closed after test
+
+	hookCalled := make(chan bool, 1) // Buffered channel to prevent blocking
+	hook := func(level Level, msg string) error {
+		select {
+		case hookCalled <- true:
+			// Successfully sent signal
+		default:
+			// Channel is full, don't block
+		}
+		return fmt.Errorf("hook error")
+	}
+
+	err := logger.AddHook(hook, 0)
+	if err != nil {
+		t.Fatalf("Failed to add hook: %v", err)
+	}
+
+	logger.Info("Test message")
+
+	// Wait for hook with timeout
+	select {
+	case <-hookCalled:
+		// Hook was called successfully
+	case <-time.After(2 * time.Second):
+		t.Fatal("Hook was not called within timeout")
+	}
+
+	// Verify hook was removed
+	logger.mu.Lock()
+	if len(logger.hooks) != 0 {
+		t.Error("Hook was not removed after error")
+	}
+	logger.mu.Unlock()
 }
 
 func TestFailingHook(t *testing.T) {
@@ -118,8 +168,11 @@ func TestFailingHook(t *testing.T) {
 		return os.ErrInvalid
 	}
 
-	logger.AddHook(hook)
+	logger.AddHook(hook, 0)
 	logger.Info("test message")
+
+	// Wait for hook error to be logged
+	time.Sleep(50 * time.Millisecond)
 
 	// Verify hook error was logged
 	output := buf.String()
@@ -130,8 +183,12 @@ func TestFailingHook(t *testing.T) {
 	// Clear the buffer for the next check
 	buf.Reset()
 
+	// Wait for hook to be removed
+	time.Sleep(50 * time.Millisecond)
+
 	// Verify hook was removed by checking no new hook error is logged
 	logger.Info("second message")
+	time.Sleep(50 * time.Millisecond)
 	output = buf.String()
 	if strings.Contains(output, "Hook error") {
 		t.Error("Hook should have been removed after error")
