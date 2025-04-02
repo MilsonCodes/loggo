@@ -78,18 +78,20 @@ func (w *multiWriter) write(data []byte) {
 
 // workerPool manages a pool of workers for executing jobs
 type workerPool struct {
-	jobs    chan func()
-	wg      sync.WaitGroup
-	stopper chan struct{}
-	workers int
+	jobs     chan func()
+	wg       sync.WaitGroup
+	stopChan chan struct{}
+	workers  int
+	mu       sync.Mutex // Mutex to protect stop channel
+	stopped  bool       // Flag to track if pool is stopped
 }
 
 // newWorkerPool creates a new worker pool with the specified number of workers
 func newWorkerPool(workers int) *workerPool {
 	pool := &workerPool{
-		jobs:    make(chan func(), workers*2),
-		stopper: make(chan struct{}),
-		workers: workers,
+		jobs:     make(chan func(), workers*2),
+		stopChan: make(chan struct{}),
+		workers:  workers,
 	}
 
 	for i := 0; i < workers; i++ {
@@ -108,7 +110,7 @@ func (p *workerPool) worker() {
 		select {
 		case job := <-p.jobs:
 			job()
-		case <-p.stopper:
+		case <-p.stopChan:
 			return
 		}
 	}
@@ -220,17 +222,33 @@ func (e *event) msgf(format string, args ...any) {
 	}
 }
 
-// stop stops the worker pool and waits for all workers to finish
+// stop stops the worker pool and waits for all workers to finish.
+// It is safe to call multiple times.
 func (p *workerPool) stop() {
-	close(p.stopper)
+	p.mu.Lock()
+	if p.stopped {
+		p.mu.Unlock()
+		return
+	}
+	p.stopped = true
+	close(p.stopChan)
+	p.mu.Unlock()
 	p.wg.Wait()
 }
 
-// submit submits a job to the worker pool
+// submit submits a job to the worker pool.
+// If the pool is stopped, the job is silently dropped.
 func (p *workerPool) submit(job func()) {
+	p.mu.Lock()
+	if p.stopped {
+		p.mu.Unlock()
+		return
+	}
+	p.mu.Unlock()
+
 	select {
 	case p.jobs <- job:
-	case <-p.stopper:
+	case <-p.stopChan:
 	}
 }
 
