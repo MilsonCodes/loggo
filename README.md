@@ -17,7 +17,7 @@ A high-performance, feature-rich logging library for Go applications. Built with
 ## Installation
 
 ```bash
-go get github.com/yourusername/loggo
+go get github.com/milsoncodes/loggo
 ```
 
 ## Quick Start
@@ -25,7 +25,7 @@ go get github.com/yourusername/loggo
 ```go
 package main
 
-import "github.com/yourusername/loggo"
+import "github.com/milsoncodes/loggo"
 
 func main() {
     // Simple API
