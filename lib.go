@@ -94,7 +94,7 @@ func newWorkerPool(workers int) *workerPool {
 		workers:  workers,
 	}
 
-	for i := 0; i < workers; i++ {
+	for range workers {
 		pool.wg.Add(1)
 		go pool.worker()
 	}
@@ -108,7 +108,10 @@ func (p *workerPool) worker() {
 
 	for {
 		select {
-		case job := <-p.jobs:
+		case job, ok := <-p.jobs:
+			if !ok {
+				return
+			}
 			job()
 		case <-p.stopChan:
 			return
@@ -222,6 +225,58 @@ func (e *event) msgf(format string, args ...any) {
 	}
 }
 
+// msg writes the message to the event buffer.
+// This is a non-formatted version of msgf.
+func (e *event) msg(msg string) {
+	if e == nil {
+		return
+	}
+	defer e.logger.putBuffer(e.buf)
+
+	// Format timestamp
+	timestamp := e.logger.getFormattedTime()
+
+	// Pre-allocate buffer with estimated size
+	// Format: color + level + reset + timestamp + ": " + message + "\n"
+	estimatedSize := len(levelColors[e.level]) + len(e.level.PaddedString()) +
+		len(colorReset) + len(timestamp) + 2 + len(msg) + 1
+
+	// Resize buffer if needed
+	if cap(*e.buf) < estimatedSize {
+		newBuf := e.logger.getBuffer(estimatedSize)
+		*newBuf = append(*newBuf, *e.buf...)
+		e.buf = newBuf
+	}
+
+	// Write the formatted message directly to the buffer
+	*e.buf = fmt.Appendf(*e.buf, "%s%s%s %s: %s\n",
+		levelColors[e.level],
+		e.level.PaddedString(),
+		colorReset,
+		timestamp,
+		msg,
+	)
+
+	// Write to output
+	e.logger.output.write(*e.buf)
+
+	// Execute hooks if any exist
+	if len(e.logger.hooks) > 0 {
+		e.logger.executeHooks(e.level, msg)
+	}
+
+	if e.level == FATAL {
+		e.logger.wg.Wait()
+		e.logger.workerPool.stop()
+		exitFunc(1)
+	}
+	if e.level == PANIC {
+		e.logger.wg.Wait()
+		e.logger.workerPool.stop()
+		panicFunc(msg)
+	}
+}
+
 // stop stops the worker pool and waits for all workers to finish.
 // It is safe to call multiple times.
 func (p *workerPool) stop() {
@@ -232,6 +287,7 @@ func (p *workerPool) stop() {
 	}
 	p.stopped = true
 	close(p.stopChan)
+	close(p.jobs)
 	p.mu.Unlock()
 	p.wg.Wait()
 }
@@ -378,7 +434,7 @@ func (l *Logger) removeHook(id string) {
 
 	for i, hook := range l.hooks {
 		if hook.id == id {
-			l.hooks = append(l.hooks[:i], l.hooks[i+1:]...)
+			l.hooks = slices.Delete(l.hooks, i, i+1)
 			return
 		}
 	}

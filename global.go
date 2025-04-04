@@ -10,38 +10,73 @@ import (
 var globalLogger = New()
 
 // Debug logs a debug message using the global logger.
-func Debug(msg string, args ...any) {
-	globalLogger.Debug(msg, args...)
+func Debug(msg string) {
+	globalLogger.Debug(msg)
+}
+
+// Debugf logs a formatted debug message using the global logger.
+func Debugf(msg string, args ...any) {
+	globalLogger.Debugf(msg, args...)
 }
 
 // Info logs an info message using the global logger.
-func Info(msg string, args ...any) {
-	globalLogger.Info(msg, args...)
+func Info(msg string) {
+	globalLogger.Info(msg)
+}
+
+// Infof logs a formatted info message using the global logger.
+func Infof(msg string, args ...any) {
+	globalLogger.Infof(msg, args...)
 }
 
 // Warn logs a warning message using the global logger.
-func Warn(msg string, args ...any) {
-	globalLogger.Warn(msg, args...)
+func Warn(msg string) {
+	globalLogger.Warn(msg)
+}
+
+// Warnf logs a formatted warning message using the global logger.
+func Warnf(msg string, args ...any) {
+	globalLogger.Warnf(msg, args...)
 }
 
 // Error logs an error message using the global logger.
-func Error(msg string, args ...any) {
-	globalLogger.Error(msg, args...)
+func Error(msg string) {
+	globalLogger.Error(msg)
+}
+
+// Errorf logs a formatted error message using the global logger.
+func Errorf(msg string, args ...any) {
+	globalLogger.Errorf(msg, args...)
 }
 
 // Critical logs a critical message using the global logger.
-func Critical(msg string, args ...any) {
-	globalLogger.Critical(msg, args...)
+func Critical(msg string) {
+	globalLogger.Critical(msg)
+}
+
+// Criticalf logs a formatted critical message using the global logger.
+func Criticalf(msg string, args ...any) {
+	globalLogger.Criticalf(msg, args...)
 }
 
 // Fatal logs a fatal error message using the global logger and exits the program.
-func Fatal(msg string, args ...any) {
-	globalLogger.Fatal(msg, args...)
+func Fatal(msg string) {
+	globalLogger.Fatal(msg)
+}
+
+// Fatalf logs a formatted fatal error message using the global logger and exits the program.
+func Fatalf(msg string, args ...any) {
+	globalLogger.Fatalf(msg, args...)
 }
 
 // Panic logs a panic message using the global logger and triggers a panic.
-func Panic(msg string, args ...any) {
-	globalLogger.Panic(msg, args...)
+func Panic(msg string) {
+	globalLogger.Panic(msg)
+}
+
+// Panicf logs a formatted panic message using the global logger and triggers a panic.
+func Panicf(msg string, args ...any) {
+	globalLogger.Panicf(msg, args...)
 }
 
 // Global configuration functions that modify the default logger instance.

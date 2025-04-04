@@ -89,7 +89,7 @@ func BenchmarkLogLevels(b *testing.B) {
 	}{
 		{
 			name:    "Debug",
-			loggo:   func(msg string, args ...any) { loggoLogger.Debug(msg, args...) },
+			loggo:   func(msg string, args ...any) { loggoLogger.Debugf(msg, args...) },
 			logrus:  func(msg string, args ...any) { logrusLogger.Debugf(msg, args...) },
 			zap:     func(msg string, args ...any) { zapLogger.Debug(fmt.Sprintf(msg, args...)) },
 			zerolog: func(msg string, args ...any) { zerologLogger.Debug().Msgf(msg, args...) },
@@ -97,7 +97,7 @@ func BenchmarkLogLevels(b *testing.B) {
 		},
 		{
 			name:    "Info",
-			loggo:   func(msg string, args ...any) { loggoLogger.Info(msg, args...) },
+			loggo:   func(msg string, args ...any) { loggoLogger.Infof(msg, args...) },
 			logrus:  func(msg string, args ...any) { logrusLogger.Infof(msg, args...) },
 			zap:     func(msg string, args ...any) { zapLogger.Info(fmt.Sprintf(msg, args...)) },
 			zerolog: func(msg string, args ...any) { zerologLogger.Info().Msgf(msg, args...) },
@@ -105,7 +105,7 @@ func BenchmarkLogLevels(b *testing.B) {
 		},
 		{
 			name:    "Warn",
-			loggo:   func(msg string, args ...any) { loggoLogger.Warn(msg, args...) },
+			loggo:   func(msg string, args ...any) { loggoLogger.Warnf(msg, args...) },
 			logrus:  func(msg string, args ...any) { logrusLogger.Warnf(msg, args...) },
 			zap:     func(msg string, args ...any) { zapLogger.Warn(fmt.Sprintf(msg, args...)) },
 			zerolog: func(msg string, args ...any) { zerologLogger.Warn().Msgf(msg, args...) },
@@ -113,7 +113,7 @@ func BenchmarkLogLevels(b *testing.B) {
 		},
 		{
 			name:    "Error",
-			loggo:   func(msg string, args ...any) { loggoLogger.Error(msg, args...) },
+			loggo:   func(msg string, args ...any) { loggoLogger.Errorf(msg, args...) },
 			logrus:  func(msg string, args ...any) { logrusLogger.Errorf(msg, args...) },
 			zap:     func(msg string, args ...any) { zapLogger.Error(fmt.Sprintf(msg, args...)) },
 			zerolog: func(msg string, args ...any) { zerologLogger.Error().Msgf(msg, args...) },

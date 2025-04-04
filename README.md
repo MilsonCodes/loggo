@@ -43,30 +43,40 @@ func main() {
 ### Global Functions
 
 ```go
-// Simple API
+// Logging functions
 loggo.Debug(msg string, args ...any)
+loggo.Debugf(format string, args ...any)
 loggo.Info(msg string, args ...any)
+loggo.Infof(format string, args ...any)
 loggo.Warn(msg string, args ...any)
+loggo.Warnf(format string, args ...any)
 loggo.Error(msg string, args ...any)
+loggo.Errorf(format string, args ...any)
 loggo.Critical(msg string, args ...any)
+loggo.Criticalf(format string, args ...any)
 loggo.Fatal(msg string, args ...any)
+loggo.Fatalf(format string, args ...any)
 loggo.Panic(msg string, args ...any)
+loggo.Panicf(format string, args ...any)
 
-// Configuration
+// Configuration functions
 loggo.SetLevel(level Level)
 loggo.SetOutput(output io.Writer)
 loggo.SetOutputs(outputs ...io.Writer)
 loggo.SetTimeFormat(format string)
 loggo.AddHook(hook func(level Level, msg string) error, priority int)
+loggo.SetExitFunc(fn func(int))
+loggo.SetPanicFunc(fn func(string))
+loggo.ResetTestFuncs()
 ```
 
-### Logger Instance
+### Logger Instance Methods
 
 ```go
 // Create a new logger
 logger := loggo.New()
 
-// Configure logger
+// Configuration methods
 logger.SetLevel(level Level)
 logger.SetOutput(output io.Writer)
 logger.SetOutputs(outputs ...io.Writer)
@@ -75,12 +85,24 @@ logger.AddHook(hook func(level Level, msg string) error, priority int)
 
 // Logging methods
 logger.Debug(msg string, args ...any)
+logger.Debugf(format string, args ...any)
 logger.Info(msg string, args ...any)
+logger.Infof(format string, args ...any)
 logger.Warn(msg string, args ...any)
+logger.Warnf(format string, args ...any)
 logger.Error(msg string, args ...any)
+logger.Errorf(format string, args ...any)
 logger.Critical(msg string, args ...any)
+logger.Criticalf(format string, args ...any)
 logger.Fatal(msg string, args ...any)
+logger.Fatalf(format string, args ...any)
 logger.Panic(msg string, args ...any)
+logger.Panicf(format string, args ...any)
+
+// Testing methods
+logger.SetExitFunc(fn func(int))
+logger.SetPanicFunc(fn func(string))
+logger.ResetTestFuncs()
 ```
 
 ## Performance
@@ -141,4 +163,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details. 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+This library was created and developed using Cursor.ai, an AI-powered IDE that helps developers write better code faster. 

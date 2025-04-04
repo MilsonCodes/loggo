@@ -210,42 +210,84 @@ func (l *Logger) AddHook(hook func(level Level, msg string) error, priority int)
 
 // Debug logs a debug message using the simple API.
 // This is a convenience method that internally uses the chained API.
-func (l *Logger) Debug(msg string, args ...any) {
+func (l *Logger) Debug(msg string) {
+	l.debugEvent().msg(msg)
+}
+
+// Debugf logs a formatted debug message using the simple API.
+// This is a convenience method that internally uses the chained API.
+func (l *Logger) Debugf(msg string, args ...any) {
 	l.debugEvent().msgf(msg, args...)
 }
 
 // Info logs an info message using the simple API.
 // This is a convenience method that internally uses the chained API.
-func (l *Logger) Info(msg string, args ...any) {
+func (l *Logger) Info(msg string) {
+	l.infoEvent().msg(msg)
+}
+
+// Infof logs a formatted info message using the simple API.
+// This is a convenience method that internally uses the chained API.
+func (l *Logger) Infof(msg string, args ...any) {
 	l.infoEvent().msgf(msg, args...)
 }
 
 // Warn logs a warning message using the simple API.
 // This is a convenience method that internally uses the chained API.
-func (l *Logger) Warn(msg string, args ...any) {
+func (l *Logger) Warn(msg string) {
+	l.warnEvent().msg(msg)
+}
+
+// Warnf logs a formatted warning message using the simple API.
+// This is a convenience method that internally uses the chained API.
+func (l *Logger) Warnf(msg string, args ...any) {
 	l.warnEvent().msgf(msg, args...)
 }
 
 // Error logs an error message using the simple API.
 // This is a convenience method that internally uses the chained API.
-func (l *Logger) Error(msg string, args ...any) {
+func (l *Logger) Error(msg string) {
+	l.errorEvent().msg(msg)
+}
+
+// Errorf logs a formatted error message using the simple API.
+// This is a convenience method that internally uses the chained API.
+func (l *Logger) Errorf(msg string, args ...any) {
 	l.errorEvent().msgf(msg, args...)
 }
 
 // Critical logs a critical message using the simple API.
 // This is a convenience method that internally uses the chained API.
-func (l *Logger) Critical(msg string, args ...any) {
+func (l *Logger) Critical(msg string) {
+	l.criticalEvent().msg(msg)
+}
+
+// Criticalf logs a formatted critical message using the simple API.
+// This is a convenience method that internally uses the chained API.
+func (l *Logger) Criticalf(msg string, args ...any) {
 	l.criticalEvent().msgf(msg, args...)
 }
 
 // Fatal logs a fatal error message using the simple API.
 // This is a convenience method that internally uses the chained API.
-func (l *Logger) Fatal(msg string, args ...any) {
+func (l *Logger) Fatal(msg string) {
+	l.fatalEvent().msg(msg)
+}
+
+// Fatalf logs a formatted fatal error message using the simple API.
+// This is a convenience method that internally uses the chained API.
+func (l *Logger) Fatalf(msg string, args ...any) {
 	l.fatalEvent().msgf(msg, args...)
 }
 
 // Panic logs a panic message using the simple API.
 // This is a convenience method that internally uses the chained API.
-func (l *Logger) Panic(msg string, args ...any) {
+func (l *Logger) Panic(msg string) {
+	l.panicEvent().msg(msg)
+}
+
+// Panicf logs a formatted panic message using the simple API.
+// This is a convenience method that internally uses the chained API.
+func (l *Logger) Panicf(msg string, args ...any) {
 	l.panicEvent().msgf(msg, args...)
 }
