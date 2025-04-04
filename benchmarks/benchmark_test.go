@@ -180,34 +180,35 @@ func BenchmarkLogLevels(b *testing.B) {
 	// Write results to file
 	fmt.Fprintf(f, "Logging Performance Results (%d iterations each)\n", iterations)
 	fmt.Fprintf(f, "================================================\n")
-	fmt.Fprintf(f, "%-10s %-15s %-15s %-15s %-15s %-15s\n", "Level", "loggo", "logrus", "zap", "zerolog", "slog")
+	fmt.Fprintf(f, "%-10s %-15s %-15s %-15s %-15s %-15s\n",
+		"Function", "loggo", "zerolog", "zap", "logrus", "slog")
 	fmt.Fprintf(f, "------------------------------------------------\n")
 
 	// Calculate averages for each logger
-	var loggoTotal, logrusTotal, zapTotal, zerologTotal, slogTotal time.Duration
+	var loggoTotal, zerologTotal, zapTotal, logrusTotal, slogTotal time.Duration
 
-	for _, level := range levels {
-		levelResults := results[level.name]
+	for _, fn := range levels {
+		fnResults := results[fn.name]
 
-		loggoAvg := average(levelResults[0:iterations])
-		logrusAvg := average(levelResults[iterations : iterations*2])
-		zapAvg := average(levelResults[iterations*2 : iterations*3])
-		zerologAvg := average(levelResults[iterations*3 : iterations*4])
-		slogAvg := average(levelResults[iterations*4 : iterations*5])
+		loggoAvg := average(fnResults[0:iterations])
+		zerologAvg := average(fnResults[iterations*3 : iterations*4])
+		zapAvg := average(fnResults[iterations*2 : iterations*3])
+		logrusAvg := average(fnResults[iterations : iterations*2])
+		slogAvg := average(fnResults[iterations*4 : iterations*5])
 
 		// Add to totals for overall average
 		loggoTotal += loggoAvg
-		logrusTotal += logrusAvg
-		zapTotal += zapAvg
 		zerologTotal += zerologAvg
+		zapTotal += zapAvg
+		logrusTotal += logrusAvg
 		slogTotal += slogAvg
 
 		fmt.Fprintf(f, "%-10s %-15v %-15v %-15v %-15v %-15v\n",
-			level.name,
+			fn.name,
 			loggoAvg,
-			logrusAvg,
-			zapAvg,
 			zerologAvg,
+			zapAvg,
+			logrusAvg,
 			slogAvg,
 		)
 	}
@@ -217,9 +218,9 @@ func BenchmarkLogLevels(b *testing.B) {
 	fmt.Fprintf(f, "%-10s %-15v %-15v %-15v %-15v %-15v\n",
 		"AVERAGE",
 		loggoTotal/time.Duration(len(levels)),
-		logrusTotal/time.Duration(len(levels)),
-		zapTotal/time.Duration(len(levels)),
 		zerologTotal/time.Duration(len(levels)),
+		zapTotal/time.Duration(len(levels)),
+		logrusTotal/time.Duration(len(levels)),
 		slogTotal/time.Duration(len(levels)),
 	)
 }
